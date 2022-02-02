@@ -1,24 +1,17 @@
 import express, { json } from "express";
 import cors from "cors";
-import dotenv from "dotenv";
-import { MongoClient } from "mongodb";
-dotenv.config();
 
-const mongoClient = new MongoClient(process.env.MONGO_URI);
-let db;
-
-mongoClient.connect(() => {
-  db = MongoClient.db("my-wallet");
-});
+import joi from "joi";
+import { signIn } from "./controllers/authController";
 
 const server = express();
 server.use(cors());
 server.use(json());
 
-server.post("/sign-up", async (req, res) => {
-  try {
-    console.log(req.body);
-  } catch (error) {
-    console.log(error);
-  }
+const signupSchema = joi.object({
+  name: joi.string().required().min(3).max(40),
+  email: joi.string().required().email(),
+  password: joi.string().required().min(3),
 });
+
+server.post("/sign-up", signIn);
