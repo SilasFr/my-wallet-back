@@ -41,7 +41,9 @@ async function signIn(req, res) {
       .insertOne({ userId: user._id, token: uuid() });
     const session = await db.collection("sessios").findOne({ _id: insertedId });
 
-    res.status(200).send(session.token);
+    res
+      .status(200)
+      .send({ name: user.name, email: user.email, token: session.token });
   } catch (error) {
     res.sendStatus(500);
   }
