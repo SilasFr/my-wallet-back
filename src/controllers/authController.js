@@ -1,22 +1,9 @@
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
 import db from "../db.js";
-import joi from "joi";
-
-const signupSchema = joi.object({
-  name: joi.string().required().min(3).max(40),
-  email: joi.string().required().email(),
-  password: joi.string().required().min(3),
-});
 
 async function signUp(req, res) {
-  const user = req.body;
-  const validation = signupSchema.validate(user);
-  if (validation.error) {
-    res.status(401).send(validation.error.details[0]);
-  }
   try {
-    // criar collection e alocar usuários
     await db
       .collection("users")
       .insertOne({ ...user, password: bcrypt.hashSync(user.password, 10) });
@@ -28,17 +15,7 @@ async function signUp(req, res) {
 }
 
 async function signIn(req, res) {
-  const user = await db.collection("users").findOne({ email: req.body.email });
-  if (!user) {
-    res.sendStatus(401);
-    return;
-  }
-
-  const validatePw = bcrypt.compareSync(req.body.password, user.password);
-  if (!validatePw) {
-    res.sendStatus(401);
-    return;
-  }
+  const user = res.locals.user;
 
   try {
     const token = uuid();
