@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { getBalanceSheet } from "../controllers/navigationController.js";
+import {
+  getBalanceSheet,
+  postNewRegistry,
+} from "../controllers/navigationController.js";
 import authorizationMiddleware from "../middlewares/authorizationMiddleware.js";
 
 const balanceSheetRouter = Router();
@@ -10,4 +13,9 @@ balanceSheetRouter.get(
   getBalanceSheet
 );
 
+balanceSheetRouter.put(
+  "/balance-sheet/new-registry",
+  authorizationMiddleware,
+  postNewRegistry
+);
 export default balanceSheetRouter;

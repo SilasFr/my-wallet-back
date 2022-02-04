@@ -4,9 +4,13 @@ import db from "../db.js";
 
 async function signUp(req, res) {
   try {
-    await db
+    const user = await db
       .collection("users")
       .insertOne({ ...user, password: bcrypt.hashSync(user.password, 10) });
+
+    await db
+      .collection("balance-sheets")
+      .insertOne({ userId: user._id, balanceSheet: [] });
     res.sendStatus(201);
   } catch (error) {
     console.log(error);
@@ -19,7 +23,7 @@ async function signIn(req, res) {
 
   try {
     const token = uuid();
-    await db.collection("sessios").insertOne({ userId: user._id, token });
+    await db.collection("sessions").insertOne({ userId: user._id, token });
     res.send(token);
   } catch (error) {
     res.sendStatus(500);
