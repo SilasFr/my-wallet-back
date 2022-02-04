@@ -29,21 +29,21 @@ async function signUp(req, res) {
 
 async function signIn(req, res) {
   const user = await db.collection("users").findOne({ email: req.body.email });
+  if (!user) {
+    res.sendStatus(401);
+    return;
+  }
+
   const validatePw = bcrypt.compareSync(req.body.password, user.password);
-  if (!user || !validatePw) {
+  if (!validatePw) {
     res.sendStatus(401);
     return;
   }
 
   try {
-    const { insertedId } = await db
-      .collection("sessios")
-      .insertOne({ userId: user._id, token: uuid() });
-    const session = await db.collection("sessios").findOne({ _id: insertedId });
-
-    res
-      .status(200)
-      .send({ name: user.name, email: user.email, token: session.token });
+    const token = uuid();
+    await db.collection("sessios").insertOne({ userId: user._id, token });
+    res.send(token);
   } catch (error) {
     res.sendStatus(500);
   }
