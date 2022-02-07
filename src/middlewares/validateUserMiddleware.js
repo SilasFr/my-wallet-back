@@ -14,5 +14,7 @@ export default function validateUserScheemaMiddleware(req, res, next) {
     res.status(401).send(validation.error.details[0]);
   }
 
+  res.locals.user = user;
+
   next();
 }

@@ -3,17 +3,17 @@ import { v4 as uuid } from "uuid";
 import db from "../db.js";
 
 async function signUp(req, res) {
+  const user = res.locals.user;
   try {
-    const user = await db
+    const newUser = await db
       .collection("users")
       .insertOne({ ...user, password: bcrypt.hashSync(user.password, 10) });
 
     await db
-      .collection("balance-sheets")
-      .insertOne({ userId: user._id, balanceSheet: [] });
+      .collection("balanceSheets")
+      .insertOne({ userId: newUser.insertedId, balanceSheet: [], extract: 0 });
     res.sendStatus(201);
   } catch (error) {
-    console.log(error);
     res.sendStatus(500);
   }
 }

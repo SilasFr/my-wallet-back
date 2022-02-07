@@ -7,4 +7,4 @@ server.use(cors());
 server.use(json());
 server.use(router);
 
-server.listen(process.env.PORT);
+server.listen(5000);
