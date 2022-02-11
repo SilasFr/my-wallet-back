@@ -5,6 +5,9 @@ import db from "../db.js";
 async function signUp(req, res) {
   const user = res.locals.user;
   try {
+    if (!user) {
+      return res.sendStatus(404);
+    }
     const newUser = await db
       .collection("users")
       .insertOne({ ...user, password: bcrypt.hashSync(user.password, 10) });
@@ -14,6 +17,7 @@ async function signUp(req, res) {
       .insertOne({ userId: newUser.insertedId, balanceSheet: [], extract: 0 });
     res.sendStatus(201);
   } catch (error) {
+    console.log("aaa");
     res.sendStatus(500);
   }
 }
